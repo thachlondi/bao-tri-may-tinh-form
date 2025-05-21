@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Bảo Trì Máy Tính</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+  <script>
+    $(function () {
+      $("#maintenanceDate, #completionDate").datepicker({
+        dateFormat: "dd-mm-yy"
+      });
+
+      $("#maintenanceDate").on("change", function () {
+        const startDate = $(this).datepicker("getDate");
+        $("#completionDate").datepicker("option", "minDate", startDate);
+      });
+
+      $("#completionDate").on("change", function () {
+        const endDate = $(this).datepicker("getDate");
+        $("#maintenanceDate").datepicker("option", "maxDate", endDate);
+      });
+
+      // Khởi tạo Select2 cho dropdown phòng ban
+      $('#department').select2({
+        placeholder: "-- Chọn phòng ban --",
+        allowClear: true
+      });
+    });
+  </script>
+</head>
+<body class="bg-white p-10 font-sans">
+
+  <h1 class="text-center text-blue-700 text-4xl font-bold mb-10">Periodic Maintenance</h1>
+
+  <form name="periodic-maintenance" method="POST" data-netlify="true" action="/success.html" class="space-y-6 max-w-xl mx-auto">
+
+    <div>
+      <label for="fullName" class="block text-sm font-medium text-black-700">Họ tên <span class="text-red-500">*</span></label>
+      <input type="text" id="fullName" name="fullName" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="company" class="block text-sm font-medium text-black-700">Công ty <span class="text-red-500">*</span></label>
+      <select id="company" name="company" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+        <option value="">-- Chọn công ty --</option>
+        <option value="minhdang">Công ty TNHH Minh Đăng</option>
+        <option value="haitri">Công ty XNK Hải Trí</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="department" class="block text-sm font-medium text-black-700">Phòng ban <span class="text-red-500">*</span></label>
+      <select id="department" name="department" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+        <option value="">-- Chọn phòng ban --</option>
+        <option value="hanh_chinh_nhan_su">P.Hành Chính Nhân Sự</option>
+        <option value="thong_ke_nhap_lieu">P.Thống Kê Nhập Liệu</option>
+        <option value="ke_toan_md">P.Kế Toán MĐ</option>
+        <option value="ke_toan_ht">P.Kế Toán HT</option>
+        <option value="kinh_doanh">P.Kinh Doanh</option>
+        <option value="cung_ung">P.Cung Ứng</option>
+        <option value="thu_ky">P.Thư Ký</option>
+        <option value="kho_d">Kho D</option>
+        <option value="dieuhanh">P.Điều Hành</option>
+        <option value="bao_ve">P.Bảo Vệ</option>
+        <option value="chat_luong">P.Chất Lượng</option>
+        <option value="thong_ke">P.Thống Kê</option>
+        <option value="kho_thanh_pham">Kho Thành Phẩm</option>
+        <option value="kho_vat_tu">Kho Vật Tư</option>
+        <option value="erp">P.ERP</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="maintenanceDate" class="block text-sm font-medium text-black-700">Ngày Bảo Trì <span class="text-red-500">*</span></label>
+      <input type="text" id="maintenanceDate" name="maintenanceDate" required readonly
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="completionDate" class="block text-sm font-medium text-black-700">Ngày Hoàn Thành <span class="text-red-500">*</span></label>
+      <input type="text" id="completionDate" name="completionDate" required readonly
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="quantity" class="block text-sm font-medium text-black-700">Số lượng <span class="text-red-500">*</span></label>
+      <input type="number" id="quantity" name="quantity" required min="1"
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="mainboard" class="block text-sm font-medium text-black-700">Mainboard <span class="text-red-500">*</span></label>
+      <input type="text" id="mainboard" name="mainboard" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="cpu" class="block text-sm font-medium text-black-700">CPU <span class="text-red-500">*</span></label>
+      <input type="text" id="cpu" name="cpu" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="ram" class="block text-sm font-medium text-black-700">RAM <span class="text-red-500">*</span></label>
+      <input type="text" id="ram" name="ram" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="hdd" class="block text-sm font-medium text-black-700">Ổ Cứng <span class="text-red-500">*</span></label>
+      <input type="text" id="hdd" name="hdd" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="psu" class="block text-sm font-medium text-black-700">Nguồn <span class="text-red-500">*</span></label>
+      <input type="text" id="psu" name="psu" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="keyboard" class="block text-sm font-medium text-black-700">Bàn Phím <span class="text-red-500">*</span></label>
+      <input type="text" id="keyboard" name="keyboard" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="mouse" class="block text-sm font-medium text-black-700">Chuột <span class="text-red-500">*</span></label>
+      <input type="text" id="mouse" name="mouse" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="case" class="block text-sm font-medium text-black-700">Case <span class="text-red-500">*</span></label>
+      <input type="text" id="case" name="case" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <label for="monitor" class="block text-sm font-medium text-black-700">Màn Hình <span class="text-red-500">*</span></label>
+      <input type="text" id="monitor" name="monitor" required
+        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+
+    <div>
+      <button type="submit"
+        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700">
+        Gửi
+      </button>
+    </div>
+  </form>
+
+</body>
+</html>
