@@ -2,17 +2,34 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gửi Thành Công</title>
+  <title>Gửi Form Thành Công!</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Đảm bảo nội dung căn giữa toàn màn hình */
+      background-color: #f8f8f8; /* Màu nền nhẹ nhàng */
+    }
+    .container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+  </style>
 </head>
-<body class="bg-white p-10 font-sans flex items-center justify-center min-h-screen">
-  <div class="text-center">
+<body class="font-sans">
+
+  <div class="container max-w-xl mx-auto">
     <h1 class="text-green-600 text-4xl font-bold mb-4">Thành Công!</h1>
     <p class="text-xl text-gray-800">Thông tin đã được ghi nhận và lưu trên hệ thống !</p>
     <p class="mt-6">
-      <a href="/" class="text-blue-600 hover:underline">Quay lại trang chủ</a>
+      <a href="index.html" class="text-blue-600 hover:underline text-lg">Quay lại trang chủ</a>
     </p>
   </div>
+
 </body>
 </html>
