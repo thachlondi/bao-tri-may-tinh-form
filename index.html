@@ -15,129 +15,100 @@
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   <style>
-    /* Chỉnh màu nền và chữ của Select2 cho chế độ sáng mặc định */
+    /* CSS CHUNG CHO TẤT CẢ CÁC INPUT VÀ SELECT */
+    /* Luôn giữ màu xám nhạt cho nền và màu tối cho chữ của input/select, bất kể chế độ tối */
+    input, select, textarea {
+        color: #1f2937 !important; /* text-gray-800 - Luôn màu tối */
+        background-color: #f9fafb !important; /* bg-gray-50 - Màu xám nhạt */
+        border-color: #d1d5db !important; /* border-gray-300 */
+        -webkit-appearance: none; /* Reset kiểu dáng mặc định của trình duyệt */
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    /* Đảm bảo màu placeholder trong input cũng luôn đúng chế độ sáng */
+    input::placeholder,
+    input::-webkit-input-placeholder,
+    input::-moz-placeholder,
+    input:-ms-input-placeholder,
+    input:-moz-placeholder,
+    textarea::placeholder,
+    textarea::-webkit-input-placeholder,
+    textarea::-moz-placeholder,
+    textarea:-ms-input-placeholder,
+    textarea:-moz-placeholder {
+      color: #6b7280 !important; /* text-gray-500 */
+    }
+
+    /* ICON LỊCH của input type="date" - Luôn giữ màu phù hợp với nền sáng của input */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.1) !important; /* Giữ icon màu tối trên nền sáng */
+        cursor: pointer;
+    }
+    
+    /* CSS RIÊNG CHO SELECT2 - Đảm bảo Select2 cũng luôn giữ màu xám nhạt */
     .select2-container--default .select2-selection--single {
-      background-color: white !important; /* bg-white */
-      border-color: #d1d5db !important; /* border-gray-300 */
-      color: #1f2937 !important; /* text-gray-800 */
-      height: 42px !important; /* Đảm bảo chiều cao khớp với các input khác */
-      display: flex !important; /* Canh giữa nội dung */
+      background-color: #f9fafb !important; /* Màu xám nhạt */
+      border-color: #d1d5db !important;
+      color: #1f2937 !important; /* Luôn màu tối */
+      height: 42px !important;
+      display: flex !important;
       align-items: center !important;
     }
 
-    /* Chỉnh màu nền và chữ của Select2 khi ở chế độ tối */
-    html.dark .select2-container--default .select2-selection--single {
-      background-color: #374151 !important; /* bg-gray-700 */
-      border-color: #4b5563 !important; /* border-gray-600 */
-      color: #f3f4f6 !important; /* text-gray-100 */
-    }
-
-    /* THÊM MỚI: Màu chữ cho giá trị đã chọn trong Select2 ở chế độ sáng */
     .select2-container--default .select2-selection--single .select2-selection__rendered {
-        color: #1f2937 !important; /* text-gray-800 */
+        color: #1f2937 !important; /* Luôn màu tối */
     }
 
-    /* THÊM MỚI: Màu chữ cho giá trị đã chọn trong Select2 ở chế độ tối */
-    html.dark .select2-container--default .select2-selection--single .select2-selection__rendered {
-        color: #f3f4f6 !important; /* text-gray-100 */
+    /* Ô tìm kiếm trong dropdown của Select2 */
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+      border-color: #d1d5db !important;
+      background-color: #f9fafb !important; /* Màu xám nhạt */
+      color: #1f2937 !important; /* Luôn màu tối */
     }
 
+    /* Danh sách tùy chọn trong dropdown của Select2 */
+    .select2-container--default .select2-results__options {
+      background-color: #f9fafb !important; /* Màu xám nhạt */
+      color: #1f2937 !important; /* Luôn màu tối */
+    }
 
     /* Chỉnh màu nền của mục được chọn trong dropdown khi mở ra (highlight) */
     .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
-      background-color: #3b82f6 !important; /* bg-blue-600 */
+      background-color: #3b82f6 !important; /* highlight vẫn giữ màu xanh */
       color: white !important;
-    }
-
-    /* Chỉnh màu nền và chữ của ô tìm kiếm trong dropdown */
-    .select2-container--default .select2-search--dropdown .select2-search__field {
-      border-color: #d1d5db !important; /* border-gray-300 */
-      background-color: white !important;
-      color: #1f2937 !important;
-    }
-
-    html.dark .select2-container--default .select2-search--dropdown .select2-search__field {
-      border-color: #4b5563 !important; /* border-gray-600 */
-      background-color: #374151 !important; /* bg-gray-700 */
-      color: #f3f4f6 !important; /* text-gray-100 */
-    }
-
-    /* Chỉnh màu nền của danh sách tùy chọn trong dropdown */
-    .select2-container--default .select2-results__options {
-      background-color: white !important;
-      color: #1f2937 !important;
-    }
-
-    html.dark .select2-container--default .select2-results__options {
-      background-color: #374151 !important; /* bg-gray-700 */
-      color: #f3f4f6 !important; /* text-gray-100 */
     }
 
     /* Chỉnh viền khi focus vào Select2 */
     .select2-container--default.select2-container--focus .select2-selection--single {
-      border-color: #3b82f6 !important; /* focus:border-blue-500 */
-      box-shadow: 0 0 0 1px #3b82f6 !important; /* focus:ring-blue-500 */
-      outline: none; /* Bỏ outline mặc định của browser */
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 1px #3b82f6 !important;
+      outline: none;
     }
 
-    /* THÊM MỚI: Chỉnh màu thanh cuộn (scrollbar) cho Select2 dropdown */
+    /* Chỉnh màu thanh cuộn (scrollbar) cho Select2 dropdown - Giữ màu sáng cho scrollbar */
     .select2-container--default .select2-results__options::-webkit-scrollbar-track {
-        background: #f1f1f1; /* Light track for light mode */
-    }
-
-    html.dark .select2-container--default .select2-results__options::-webkit-scrollbar-track {
-        background: #4a5568; /* Darker track for dark mode */
+        background: #f1f1f1 !important;
     }
 
     .select2-container--default .select2-results__options::-webkit-scrollbar-thumb {
-        background: #888; /* Grey thumb for light mode */
-        border-radius: 4px;
-    }
-
-    html.dark .select2-container--default .select2-results__options::-webkit-scrollbar-thumb {
-        background: #6b7280; /* Darker grey thumb for dark mode */
+        background: #888 !important;
         border-radius: 4px;
     }
 
     .select2-container--default .select2-results__option {
-        color: #1f2937 !important; /* Default text color for options */
+        color: #1f2937 !important; /* Luôn màu tối */
     }
 
-    html.dark .select2-container--default .select2-results__option {
-        color: #f3f4f6 !important; /* Dark mode text color for options */
-    }
-
-    /* Đảm bảo màu nền của body trong dropdown (nếu có scrollbar) cũng theo dark mode */
+    /* Đảm bảo màu nền của body trong dropdown (nếu có scrollbar) cũng luôn sáng */
     .select2-dropdown {
-        background-color: white !important;
+        background-color: #f9fafb !important; /* Màu xám nhạt */
         border-color: #d1d5db !important;
     }
 
-    html.dark .select2-dropdown {
-        background-color: #374151 !important; /* bg-gray-700 */
-        border-color: #4b5563 !important; /* border-gray-600 */
-    }
-
-    /* THÊM MỚI: Chỉnh màu nền cho input tìm kiếm trong dropdown của Select2 */
-    .select2-search__field {
-        background-color: white !important;
-        color: #1f2937 !important;
-        border: 1px solid #d1d5db !important;
-    }
-
-    html.dark .select2-search__field {
-        background-color: #374151 !important; /* bg-gray-700 */
-        color: #f3f4f6 !important; /* text-gray-100 */
-        border: 1px solid #4b5563 !important;
-    }
-
-    /* THÊM MỚI: Chỉnh màu placeholder cho Select2 (khi chưa chọn giá trị) */
+    /* Chỉnh màu placeholder cho Select2 (khi chưa chọn giá trị) */
     .select2-container--default .select2-selection--single .select2-selection__placeholder {
-        color: #6b7280 !important; /* text-gray-500 cho chế độ sáng */
-    }
-
-    html.dark .select2-container--default .select2-selection--single .select2-selection__placeholder {
-        color: #d1d5db !important; /* text-gray-300 cho chế độ tối */
+        color: #6b7280 !important; /* Luôn màu tối */
     }
   </style>
 </head>
@@ -167,23 +138,23 @@
       <div>
         <label class="font-medium">Họ tên</label>
         <input type="text" name="Họ tên" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div>
         <label class="font-medium">Công ty</label>
         <select name="Công ty" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+          class="mt-1 w-full p-2 rounded border">
           <option value="">-- Chọn công ty --</option>
           <option>Công ty TNHH Minh Đăng</option>
           <option>Công ty CP XNK Hải Trí</option>
         </select>
       </div>
 
-     <div class="md:col-span-2">
+      <div class="md:col-span-2">
         <label class="font-medium">Phòng ban</label>
         <select id="department" name="Phòng ban" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+        class="mt-1 block w-full rounded-md border shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
         <option value="">-- Chọn phòng ban --</option>
         <option value="P.Hành Chính Nhân Sự">P.Hành Chính Nhân Sự</option>
         <option value="P.Thống Kê Nhập Liệu">P.Thống Kê Nhập Liệu</option>
@@ -206,64 +177,64 @@
       <div>
         <label class="font-medium">Ngày bảo trì</label>
         <input type="date" name="Ngày bảo trì" id="maintenanceDate" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div>
         <label class="font-medium">Ngày hoàn thành</label>
         <input type="date" name="Ngày hoàn thành" id="completionDate" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div>
         <label class="font-medium">Số lượng</label>
         <input type="number" name="Số lượng" min="1" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">Mainboard</label>
         <input type="text" name="Mainboard" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">CPU</label>
         <input type="text" name="CPU" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">RAM</label>
         <input type="text" name="RAM" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">Ổ cứng (SSD/HDD)</label>
         <input type="text" name="Ổ cứng (SSD/HDD)" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">Nguồn</label>
         <input type="text" name="Nguồn" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">Bàn phím</label>
         <input type="text" name="Bàn phím" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">Chuột</label>
         <input type="text" name="Chuột" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">Case</label>
         <input type="text" name="Case" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div><label class="font-medium">Màn hình</label>
         <input type="text" name="Màn hình" required
-          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+          class="mt-1 w-full p-2 rounded border" />
       </div>
 
       <div class="md:col-span-2 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
@@ -283,24 +254,17 @@
     const maintenanceDateInput = document.getElementById('maintenanceDate');
     const completionDateInput = document.getElementById('completionDate');
 
-    const updateSelect2Theme = () => {
-      // Hàm này không cần logic JS phức tạp vì các quy tắc CSS đã được định nghĩa trong <style>
-      // Chỉ cần đảm bảo rằng Select2 được khởi tạo sau khi các quy tắc CSS đã tải
-    };
-
     toggle.addEventListener('change', () => {
       html.classList.toggle('dark');
       dot.classList.toggle('translate-x-5');
-      // Không cần gọi updateSelect2Theme() ở đây nếu CSS đã xử lý tốt
-      // Select2 sẽ tự động nhận diện class 'dark' trên <html>
     });
 
     $(document).ready(function() {
         // Khởi tạo Select2 cho trường phòng ban
         $('#department').select2({
-            placeholder: "-- Chọn phòng ban --", // Đảm bảo có placeholder rõ ràng            
+            placeholder: "-- Chọn phòng ban --",
+            allowClear: false
         });
-        updateSelect2Theme(); // Gọi hàm này một lần khi trang tải để Select2 áp dụng theme
 
         function updateCompletionMinDate() {
             if (maintenanceDateInput.value) {
