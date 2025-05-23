@@ -1,62 +1,188 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="transition duration-300">
 <head>
   <meta charset="UTF-8">
-  <title>Bảo Trì Máy Tính</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phiếu Bảo Trì Máy Tính</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
   <script>
-    $(function () {
-      $("#maintenanceDate, #completionDate").datepicker({
-        dateFormat: "dd-mm-yy"
-      });
-
-      $("#maintenanceDate").on("change", function () {
-        const startDate = $(this).datepicker("getDate");
-        $("#completionDate").datepicker("option", "minDate", startDate);
-      });
-
-      $("#completionDate").on("change", function () {
-        const endDate = $(this).datepicker("getDate");
-        $("#maintenanceDate").datepicker("option", "maxDate", endDate);
-      });
-
-      // Khởi tạo Select2 cho dropdown phòng ban
-      $('#department').select2({
-        placeholder: "-- Chọn phòng ban --",
-        allowClear: true
-      });
-    });
+    tailwind.config = {
+      darkMode: 'class'
+    }
   </script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <style>
+    /* Chỉnh màu nền và chữ của Select2 cho chế độ sáng mặc định */
+    .select2-container--default .select2-selection--single {
+      background-color: white !important; /* bg-white */
+      border-color: #d1d5db !important; /* border-gray-300 */
+      color: #1f2937 !important; /* text-gray-800 */
+      height: 42px !important; /* Đảm bảo chiều cao khớp với các input khác */
+      display: flex !important; /* Canh giữa nội dung */
+      align-items: center !important;
+    }
+
+    /* Chỉnh màu nền và chữ của Select2 khi ở chế độ tối */
+    html.dark .select2-container--default .select2-selection--single {
+      background-color: #374151 !important; /* bg-gray-700 */
+      border-color: #4b5563 !important; /* border-gray-600 */
+      color: #f3f4f6 !important; /* text-gray-100 */
+    }
+
+    /* THÊM MỚI: Màu chữ cho giá trị đã chọn trong Select2 ở chế độ sáng */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #1f2937 !important; /* text-gray-800 */
+    }
+
+    /* THÊM MỚI: Màu chữ cho giá trị đã chọn trong Select2 ở chế độ tối */
+    html.dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #f3f4f6 !important; /* text-gray-100 */
+    }
+
+
+    /* Chỉnh màu nền của mục được chọn trong dropdown khi mở ra (highlight) */
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+      background-color: #3b82f6 !important; /* bg-blue-600 */
+      color: white !important;
+    }
+
+    /* Chỉnh màu nền và chữ của ô tìm kiếm trong dropdown */
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+      border-color: #d1d5db !important; /* border-gray-300 */
+      background-color: white !important;
+      color: #1f2937 !important;
+    }
+
+    html.dark .select2-container--default .select2-search--dropdown .select2-search__field {
+      border-color: #4b5563 !important; /* border-gray-600 */
+      background-color: #374151 !important; /* bg-gray-700 */
+      color: #f3f4f6 !important; /* text-gray-100 */
+    }
+
+    /* Chỉnh màu nền của danh sách tùy chọn trong dropdown */
+    .select2-container--default .select2-results__options {
+      background-color: white !important;
+      color: #1f2937 !important;
+    }
+
+    html.dark .select2-container--default .select2-results__options {
+      background-color: #374151 !important; /* bg-gray-700 */
+      color: #f3f4f6 !important; /* text-gray-100 */
+    }
+
+    /* Chỉnh viền khi focus vào Select2 */
+    .select2-container--default.select2-container--focus .select2-selection--single {
+      border-color: #3b82f6 !important; /* focus:border-blue-500 */
+      box-shadow: 0 0 0 1px #3b82f6 !important; /* focus:ring-blue-500 */
+      outline: none; /* Bỏ outline mặc định của browser */
+    }
+
+    /* THÊM MỚI: Chỉnh màu thanh cuộn (scrollbar) cho Select2 dropdown */
+    .select2-container--default .select2-results__options::-webkit-scrollbar-track {
+        background: #f1f1f1; /* Light track for light mode */
+    }
+
+    html.dark .select2-container--default .select2-results__options::-webkit-scrollbar-track {
+        background: #4a5568; /* Darker track for dark mode */
+    }
+
+    .select2-container--default .select2-results__options::-webkit-scrollbar-thumb {
+        background: #888; /* Grey thumb for light mode */
+        border-radius: 4px;
+    }
+
+    html.dark .select2-container--default .select2-results__options::-webkit-scrollbar-thumb {
+        background: #6b7280; /* Darker grey thumb for dark mode */
+        border-radius: 4px;
+    }
+
+    .select2-container--default .select2-results__option {
+        color: #1f2937 !important; /* Default text color for options */
+    }
+
+    html.dark .select2-container--default .select2-results__option {
+        color: #f3f4f6 !important; /* Dark mode text color for options */
+    }
+
+    /* Đảm bảo màu nền của body trong dropdown (nếu có scrollbar) cũng theo dark mode */
+    .select2-dropdown {
+        background-color: white !important;
+        border-color: #d1d5db !important;
+    }
+
+    html.dark .select2-dropdown {
+        background-color: #374151 !important; /* bg-gray-700 */
+        border-color: #4b5563 !important; /* border-gray-600 */
+    }
+
+    /* THÊM MỚI: Chỉnh màu nền cho input tìm kiếm trong dropdown của Select2 */
+    .select2-search__field {
+        background-color: white !important;
+        color: #1f2937 !important;
+        border: 1px solid #d1d5db !important;
+    }
+
+    html.dark .select2-search__field {
+        background-color: #374151 !important; /* bg-gray-700 */
+        color: #f3f4f6 !important; /* text-gray-100 */
+        border: 1px solid #4b5563 !important;
+    }
+
+    /* THÊM MỚI: Chỉnh màu placeholder cho Select2 (khi chưa chọn giá trị) */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #6b7280 !important; /* text-gray-500 cho chế độ sáng */
+    }
+
+    html.dark .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #d1d5db !important; /* text-gray-300 cho chế độ tối */
+    }
+  </style>
 </head>
-<body class="bg-white p-10 font-sans">
+<body class="bg-gray-100 dark:bg-gray-900 transition duration-300 text-gray-800 dark:text-gray-100">
 
-  <h1 class="text-center text-blue-700 text-4xl font-bold mb-10">Periodic Maintenance</h1>
+  <div class="flex justify-end max-w-4xl mx-auto mt-4 pr-4">
+    <label class="inline-flex items-center cursor-pointer">
+      <input type="checkbox" id="darkToggle" class="sr-only">
+      <span class="relative w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full transition duration-300">
+        <span class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full shadow-md transform transition duration-300"
+              id="toggleDot"></span>
+      </span>
+      <span class="ml-3 text-sm">Chế độ tối</span>
+    </label>
+  </div>
 
-  <form name="periodic-maintenance" method="POST" data-netlify="true" action="success.html" class="space-y-6 max-w-xl mx-auto">
-    <div>
-      <label for="fullName" class="block text-sm font-medium text-black-700">Họ tên <span class="text-red-500">*</span></label>
-      <input type="text" id="fullName" name="fullName" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
+  <div id="form-container" class="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6 mt-6">
+    <div class="flex items-center justify-center mb-4">
+        <img id="logo-img" src="images/MD.png" alt="Logo Công ty" class="h-24 w-auto mr-4 object-contain">
+        <h1 class="text-center text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400 uppercase">
+            Phiếu Bảo Trì Máy Tính Định Kỳ
+        </h1>
     </div>
 
-    <div>
-      <label for="company" class="block text-sm font-medium text-black-700">Công ty <span class="text-red-500">*</span></label>
-      <select id="company" name="company" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
-        <option value="">-- Chọn công ty --</option>
-        <option value="Công ty TNHH Minh Đăng">Công ty TNHH Minh Đăng</option>
-        <option value="Công ty CP XNK Hải Trí">Công ty CP XNK Hải Trí</option>
-      </select>
-    </div>
+    <form id="maintenanceForm" name="periodic-maintenance" method="POST" data-netlify="true" action="success.html" class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-    <div>
-      <label for="department" class="block text-sm font-medium text-black-700">Phòng ban <span class="text-red-500">*</span></label>
-      <select id="department" name="department" required
+      <div>
+        <label class="font-medium">Họ tên</label>
+        <input type="text" name="Họ tên" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
+
+      <div>
+        <label class="font-medium">Công ty</label>
+        <select name="Công ty" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+          <option value="">-- Chọn công ty --</option>
+          <option>Công ty TNHH Minh Đăng</option>
+          <option>Công ty CP XNK Hải Trí</option>
+        </select>
+      </div>
+
+     <div class="md:col-span-2">
+        <label class="font-medium">Phòng ban</label>
+        <select id="department" name="Phòng ban" required
         class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
         <option value="">-- Chọn phòng ban --</option>
         <option value="P.Hành Chính Nhân Sự">P.Hành Chính Nhân Sự</option>
@@ -74,88 +200,149 @@
         <option value="Kho Thành Phẩm">Kho Thành Phẩm</option>
         <option value="Kho Vật Tư">Kho Vật Tư</option>
         <option value="P.ERP">P.ERP</option>
-      </select>
-    </div>
+        </select>
+      </div>
 
-    <div>
-      <label for="maintenanceDate" class="block text-sm font-medium text-black-700">Ngày Bảo Trì <span class="text-red-500">*</span></label>
-      <input type="text" id="maintenanceDate" name="maintenanceDate" required readonly
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div>
+        <label class="font-medium">Ngày bảo trì</label>
+        <input type="date" name="Ngày bảo trì" id="maintenanceDate" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="completionDate" class="block text-sm font-medium text-black-700">Ngày Hoàn Thành <span class="text-red-500">*</span></label>
-      <input type="text" id="completionDate" name="completionDate" required readonly
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div>
+        <label class="font-medium">Ngày hoàn thành</label>
+        <input type="date" name="Ngày hoàn thành" id="completionDate" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="quantity" class="block text-sm font-medium text-black-700">Số lượng <span class="text-red-500">*</span></label>
-      <input type="number" id="quantity" name="quantity" required min="1"
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div>
+        <label class="font-medium">Số lượng</label>
+        <input type="number" name="Số lượng" min="1" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="mainboard" class="block text-sm font-medium text-black-700">Mainboard <span class="text-red-500">*</span></label>
-      <input type="text" id="mainboard" name="mainboard" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">Mainboard</label>
+        <input type="text" name="Mainboard" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="cpu" class="block text-sm font-medium text-black-700">CPU <span class="text-red-500">*</span></label>
-      <input type="text" id="cpu" name="cpu" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">CPU</label>
+        <input type="text" name="CPU" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="ram" class="block text-sm font-medium text-black-700">RAM <span class="text-red-500">*</span></label>
-      <input type="text" id="ram" name="ram" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">RAM</label>
+        <input type="text" name="RAM" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="hdd" class="block text-sm font-medium text-black-700">Ổ Cứng <span class="text-red-500">*</span></label>
-      <input type="text" id="hdd" name="hdd" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">Ổ cứng (SSD/HDD)</label>
+        <input type="text" name="Ổ cứng (SSD/HDD)" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="psu" class="block text-sm font-medium text-black-700">Nguồn <span class="text-red-500">*</span></label>
-      <input type="text" id="psu" name="psu" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">Nguồn</label>
+        <input type="text" name="Nguồn" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="keyboard" class="block text-sm font-medium text-black-700">Bàn Phím <span class="text-red-500">*</span></label>
-      <input type="text" id="keyboard" name="keyboard" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">Bàn phím</label>
+        <input type="text" name="Bàn phím" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="mouse" class="block text-sm font-medium text-black-700">Chuột <span class="text-red-500">*</span></label>
-      <input type="text" id="mouse" name="mouse" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">Chuột</label>
+        <input type="text" name="Chuột" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="case" class="block text-sm font-medium text-black-700">Case <span class="text-red-500">*</span></label>
-      <input type="text" id="case" name="case" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">Case</label>
+        <input type="text" name="Case" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <label for="monitor" class="block text-sm font-medium text-black-700">Màn Hình <span class="text-red-500">*</span></label>
-      <input type="text" id="monitor" name="monitor" required
-        class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" />
-    </div>
+      <div><label class="font-medium">Màn hình</label>
+        <input type="text" name="Màn hình" required
+          class="mt-1 w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" />
+      </div>
 
-    <div>
-      <button type="submit"
-        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700">
-        Gửi
-      </button>
-    </div>
-  </form>
+      <div class="md:col-span-2 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+        <button type="submit"
+          class="w-full sm:w-auto p-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded transition">
+          Gửi Phiếu Bảo Trì
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const toggle = document.getElementById('darkToggle');
+    const html = document.documentElement;
+    const dot = document.getElementById('toggleDot');
+    const maintenanceForm = document.getElementById('maintenanceForm');
+    const maintenanceDateInput = document.getElementById('maintenanceDate');
+    const completionDateInput = document.getElementById('completionDate');
+
+    const updateSelect2Theme = () => {
+      // Hàm này không cần logic JS phức tạp vì các quy tắc CSS đã được định nghĩa trong <style>
+      // Chỉ cần đảm bảo rằng Select2 được khởi tạo sau khi các quy tắc CSS đã tải
+    };
+
+    toggle.addEventListener('change', () => {
+      html.classList.toggle('dark');
+      dot.classList.toggle('translate-x-5');
+      // Không cần gọi updateSelect2Theme() ở đây nếu CSS đã xử lý tốt
+      // Select2 sẽ tự động nhận diện class 'dark' trên <html>
+    });
+
+    $(document).ready(function() {
+        // Khởi tạo Select2 cho trường phòng ban
+        $('#department').select2({
+            placeholder: "-- Chọn phòng ban --", // Đảm bảo có placeholder rõ ràng            
+        });
+        updateSelect2Theme(); // Gọi hàm này một lần khi trang tải để Select2 áp dụng theme
+
+        function updateCompletionMinDate() {
+            if (maintenanceDateInput.value) {
+                completionDateInput.min = maintenanceDateInput.value;
+                if (completionDateInput.value && completionDateInput.value < maintenanceDateInput.value) {
+                    completionDateInput.value = maintenanceDateInput.value;
+                }
+            } else {
+                completionDateInput.removeAttribute('min');
+            }
+        }
+
+        maintenanceDateInput.addEventListener('change', updateCompletionMinDate);
+        updateCompletionMinDate();
+
+        function getFormData() {
+            const formData = {};
+            $(maintenanceForm).find('input[name], select[name]').each(function() {
+                const name = $(this).attr('name');
+                let value;
+
+                if ($(this).is('select')) {
+                    const selectedValue = $(this).val();
+                    if (selectedValue === "") {
+                        value = "";
+                    } else {
+                        value = $(this).find('option:selected').text();
+                    }
+                } else {
+                    value = $(this).val();
+                }
+                formData[name] = value;
+            });
+            return formData;
+        }
+
+        maintenanceForm.addEventListener('submit', function(event) {
+            const formData = getFormData();
+            localStorage.setItem('submittedFormData', JSON.stringify(formData));
+        });
+    });
+  </script>
 
 </body>
 </html>

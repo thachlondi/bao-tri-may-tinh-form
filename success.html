@@ -1,35 +1,271 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Gửi Form Thành Công!</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh; /* Đảm bảo nội dung căn giữa toàn màn hình */
-      background-color: #f8f8f8; /* Màu nền nhẹ nhàng */
-    }
-    .container {
-      background-color: white;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-  </style>
-</head>
-<body class="font-sans">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Form Thành Công!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-  <div class="container max-w-xl mx-auto">
-    <h1 class="text-green-600 text-4xl font-bold mb-4">Thành Công!</h1>
-    <p class="text-xl text-gray-800">Thông tin đã được ghi nhận và lưu trên hệ thống !</p>
-    <p class="mt-6">
-      <a href="index.html" class="text-blue-600 hover:underline text-lg">Quay lại trang chủ</a>
-    </p>
-  </div>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f8f8;
+            font-family: sans-serif;
+        }
+        .main-content-wrapper {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            margin: 20px auto;
+        }
+
+        /* CSS cho việc In ấn trình duyệt */
+        @media print {
+            body > *:not(#printable-content-for-print) {
+                display: none !important;
+            }
+            body {
+                display: block !important;
+                min-height: auto;
+                background-color: white !important;
+                margin: 0;
+                padding: 0;
+            }
+            #printable-content-for-print {
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                padding: 20mm !important; /* margin trang in */
+                margin: 0 !important;
+                text-align: left;
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: 9999;
+                background-color: white !important;
+                box-sizing: border-box;
+                font-family: 'Times New Roman', Times, serif; /* Đảm bảo font khi in */
+            }
+            .no-print {
+                display: none !important;
+            }
+            #printable-content-for-print h1, #printable-content-for-print strong, #printable-content-for-print span, #printable-content-for-print p, #printable-content-for-print td {
+                color: black !important;
+            }
+            #printable-content-for-print table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+            }
+            #printable-content-for-print td {
+                padding: 8px;
+                border: 1px solid #ddd;
+                vertical-align: top;
+            }
+            #printable-content-for-print td:first-child {
+                width: 35%;
+                font-weight: bold;
+                background-color: #f2f2f2;
+            }
+        }
+        
+        /* Đã loại bỏ CSS cho #pdf-temp-container */
+    </style>
+</head>
+<body class="font-sans bg-gray-100 text-gray-800">
+
+    <div class="main-content-wrapper no-print">
+        <h1 class="text-green-600 text-4xl font-bold mb-4">Thành Công!</h1>
+        <p class="text-xl text-gray-800">Thông tin đã được ghi nhận và lưu trên hệ thống.</p>
+
+        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+            <button type="button" id="viewInfoBtn"
+                class="w-full sm:w-auto p-3 bg-blue-500 hover:bg-indigo-600 text-white font-semibold rounded transition">
+                Xem thông tin phiếu
+            </button>
+            <button type="button" id="printBtn"
+                class="w-full sm:w-auto p-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded transition">
+                In Phiếu
+            </button>
+            <button type="button" id="exportWordBtn"
+                class="w-full sm:w-auto p-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded transition">
+                Xuất Word
+            </button>
+        </div>
+
+        <p class="mt-6">
+            <a href="index.html" class="text-blue-600 hover:underline text-lg">Quay lại trang gửi phiếu mới</a>
+        </p>
+    </div>
+
+    <div id="infoDisplayContainer" class="main-content-wrapper mt-8" style="display: none;">
+        </div>
+
+    <div id="printable-content-for-print"></div>
+
+    <script>
+$(document).ready(function() {
+    const infoDisplayContainer = document.getElementById('infoDisplayContainer');
+    const printableContentForPrint = document.getElementById('printable-content-for-print');
+    // Đã loại bỏ pdfTempContainer
+
+    // Hàm lấy dữ liệu từ localStorage
+    function getStoredFormData() {
+        const storedData = localStorage.getItem('submittedFormData');
+        if (storedData) {
+            return JSON.parse(storedData);
+        }
+        return null;
+    }
+
+    // Hàm tạo nội dung HTML cho phiếu
+    function createPrintableHtml(data) {
+        if (!data) {
+            console.error("Dữ liệu form trống. Không thể tạo nội dung phiếu.");
+            return "<p>Không có dữ liệu để hiển thị.</p>";
+        }
+
+        // Cập nhật các key trong displayOrder để khớp với tên tiếng Việt mới
+        const displayOrder = [
+            { key: 'Họ tên', label: 'Họ tên' },
+            { key: 'Công ty', label: 'Công ty' },
+            { key: 'Phòng ban', label: 'Phòng ban' },
+            { key: 'Ngày bảo trì', label: 'Ngày bảo trì' },
+            { key: 'Ngày hoàn thành', 'label': 'Ngày hoàn thành' },
+            { key: 'Số lượng', label: 'Số lượng' },
+            { key: 'Mainboard', label: 'Mainboard' },
+            { key: 'CPU', label: 'CPU' },
+            { key: 'RAM', label: 'RAM' },
+            { key: 'Ổ cứng (SSD/HDD)', label: 'Ổ cứng (SSD/HDD)' },
+            { key: 'Nguồn', label: 'Nguồn' },
+            { key: 'Bàn phím', label: 'Bàn phím' },
+            { key: 'Chuột', label: 'Chuột' },
+            { key: 'Case', label: 'Case' },
+            { key: 'Màn hình', label: 'Màn hình' }
+        ];
+
+        let htmlContent = `
+            <div style="font-family: 'Times New Roman', Times, serif; color: #000;">
+                <div class="header" style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="font-size: 24px; font-weight: bold; color: #3b82f6; text-transform: uppercase; margin: 0;">PHIẾU BẢO TRÌ MÁY TÍNH ĐỊNH KỲ</h1>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px; border: 1px solid #ddd;">`;
+        
+        displayOrder.forEach(item => {
+            // Lấy giá trị từ `data` (là dữ liệu đã lưu trong localStorage) bằng key mới
+            const value = data[item.key] || 'N/A'; 
+            htmlContent += `
+                <tr>
+                    <td style="width: 35%; padding: 8px; border: 1px solid #ddd; font-weight: bold; background-color: #f2f2f2;">${item.label}:</td>
+                    <td style="width: 65%; padding: 8px; border: 1px solid #ddd;">${value}</td>
+                </tr>
+            `;
+        });
+
+        htmlContent += `
+                </table>
+
+                <div style="margin-top: 60px; text-align: right; padding-right: 50px;">
+                    <p><strong>Người lập phiếu</strong></p>
+                    <p>(Ký và ghi rõ họ tên)</p>
+                    <br><br><br>
+                    <p>_________________________</p>
+                </div>
+            </div>
+        `;
+        return htmlContent;
+    }
+
+    // --- Khởi tạo và kiểm tra dữ liệu ban đầu ---
+    let formData = getStoredFormData();
+    if (!formData) {
+        console.warn("Không tìm thấy dữ liệu form trong localStorage. Vô hiệu hóa các nút.");
+        // Chỉ vô hiệu hóa các nút còn lại
+        $('#viewInfoBtn, #printBtn, #exportWordBtn').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+    } else {
+        console.log("Dữ liệu form đã tải:", formData);
+    }
+
+    // --- Xử lý sự kiện Xem thông tin phiếu ---
+    $('#viewInfoBtn').on('click', function() {
+        if (!formData) {
+            alert("Không có dữ liệu phiếu để hiển thị. Vui lòng gửi lại phiếu.");
+            return;
+        }
+        
+        infoDisplayContainer.innerHTML = createPrintableHtml(formData);
+        $(infoDisplayContainer).slideToggle(); // Hiển thị/ẩn với hiệu ứng trượt
+    });
+
+    // --- Xử lý sự kiện In Phiếu ---
+    $('#printBtn').on('click', function() {
+        console.log("Nút 'In Phiếu' được nhấn.");
+        if (!formData) {
+            alert('Không có dữ liệu phiếu để in!');
+            return;
+        }
+
+        printableContentForPrint.innerHTML = createPrintableHtml(formData);
+        printableContentForPrint.style.display = 'block'; // Hiển thị tạm thời vùng in
+
+        window.print();
+
+        printableContentForPrint.style.display = 'none'; // Ẩn lại sau khi in
+        printableContentForPrint.innerHTML = '';
+    });
+
+    // --- Xử lý sự kiện Xuất Word ---
+    $('#exportWordBtn').on('click', function() {
+        console.log("Nút 'Xuất Word' được nhấn.");
+        if (!formData) {
+            alert('Không có dữ liệu để xuất Word!');
+            return;
+        }
+
+        // Tạo nội dung HTML với CSS inline để Word có thể đọc được
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: 'Times New Roman', Times, serif; color: #000; margin: 20mm; }
+                    .header { text-align: center; margin-bottom: 20px; }
+                    .header h1 { font-size: 24px; font-weight: bold; color: #3b82f6; text-transform: uppercase; }
+                    .section-title { font-size: 1.5rem; font-weight: bold; color: #3b82f6; text-align: center; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                    td { padding: 8px; border: 1px solid #ddd; }
+                    td:first-child { width: 35%; font-weight: bold; background-color: #f2f2f2; }
+                    .signature-block { margin-top: 60px; text-align: right; padding-right: 50px; }
+                    @page { size: A4; margin: 20mm; }
+                </style>
+            </head>
+            <body>
+                ${createPrintableHtml(formData)}
+            </body>
+            </html>
+        `;
+
+        const blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8;' });
+        saveAs(blob, 'PhieuBaoTriMayTinh.doc');
+        console.log("File Word đã được tạo và lưu (định dạng cơ bản).");
+        alert("File Word đã được tạo và tải xuống.");
+    });
+});
+</script>
 
 </body>
 </html>
